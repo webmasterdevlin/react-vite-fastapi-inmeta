@@ -1,8 +1,3 @@
-const fs = require('fs');
-const path = require('path');
-
-const prettierOptions = JSON.parse(fs.readFileSync(path.resolve(__dirname, '.prettierrc'), 'utf8'));
-
 module.exports = {
   env: {
     browser: true,
@@ -11,11 +6,10 @@ module.exports = {
   extends: [
     'prettier',
     'eslint:recommended',
-    'eslint-config-prettier',
     'plugin:react/recommended',
     'plugin:@typescript-eslint/recommended',
     'plugin:import/recommended',
-    'plugin:jsx-a11y/recommended',
+    // 'plugin:jsx-a11y/recommended', if a11y is needed
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -35,9 +29,8 @@ module.exports = {
       },
     },
   },
-  plugins: ['react', 'prettier', '@typescript-eslint', 'autofix', 'react-hooks', 'sort-keys-fix'],
+  plugins: ['autofix', 'react-hooks', 'sort-keys-fix'],
   rules: {
-    'prettier/prettier': ['error', prettierOptions],
     'sort-keys-fix/sort-keys-fix': 'warn',
     '@typescript-eslint/no-explicit-any': 'warn',
     '@typescript-eslint/no-unused-vars': 'warn',
@@ -46,7 +39,6 @@ module.exports = {
     {
       files: ['**/*.ts?(x)'],
       rules: {
-        'prettier/prettier': ['warn', prettierOptions],
         'react/react-in-jsx-scope': 'off',
         camelcase: 'error',
         'spaced-comment': 'error',
