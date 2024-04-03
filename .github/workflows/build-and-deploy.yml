@@ -1,0 +1,52 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    env:
+      # Example environment variables for React Vite build
+      VITE_API_URL: 'https://api.example.com'
+      VITE_ENV: 'production'
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'
+        
+    - name: Install dependencies and build
+      run: npm install && npm run build
+      env:
+        VITE_API_URL: ${{ env.VITE_API_URL }}
+        VITE_ENV: ${{ env.VITE_ENV }}
+    
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+    
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        file: ./Dockerfile
+        push: true
+        tags: yourusername/myapp:${{ github.sha }}
+        # IMPORTANT: Replace 'yourusername/myapp' with your actual Docker Hub username/repository
+    
+    - name: Deploy to Azure Web App
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: your-azure-app-name
+        images: 'yourusername/myapp:${{ github.sha }}'
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+        # IMPORTANT: Replace 'your-azure-app-name' with your actual Azure Web App name
+

@@ -1,0 +1,65 @@
+trigger:
+- main
+- master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  imageName: 'myappimage:$(Build.BuildId)'
+  # Example environment variables for React Vite build
+  VITE_API_URL: 'https://api.example.com'
+  VITE_ENV: 'production'
+  # Example for FastAPI
+  FASTAPI_DEBUG: 'false'
+  # Docker variables (ensure these are securely set in your Azure DevOps project settings)
+  dockerRegistry: 'yourDockerRegistry'
+  dockerRepository: 'yourDockerRepository'
+  dockerUsername: '$(dockerUsername)'
+  dockerPassword: '$(dockerPassword)'
+  # Azure variables
+  azureSubscription: 'yourAzureSubscription'
+  azureAppServiceName: 'yourAzureAppServiceName'
+
+steps:
+- checkout: self
+
+- task: NodeTool@0
+  inputs:
+    versionSpec: '14.x'
+  displayName: 'Install Node.js'
+
+- script: |
+    npm install
+    npm run build
+  displayName: 'Build React app'
+  env:
+    VITE_API_URL: $(VITE_API_URL)
+    VITE_ENV: $(VITE_ENV)
+
+- task: Docker@2
+  displayName: 'Login to Docker Registry'
+  inputs:
+    command: login
+    containerRegistry: $(dockerRegistry)
+    username: $(dockerUsername)
+    password: $(dockerPassword)
+
+- task: Docker@2
+  displayName: 'Build and Push Docker image'
+  inputs:
+    command: buildAndPush
+    repository: $(dockerRepository)
+    dockerfile: '**/Dockerfile' # Ensure this path correctly points to your Dockerfile
+    containerRegistry: $(dockerRegistry)
+    tags: |
+      $(imageName)
+
+- task: AzureWebAppContainer@1
+  displayName: 'Deploy to Azure Web App for Containers'
+  inputs:
+    azureSubscription: $(azureSubscription)
+    appName: $(azureAppServiceName)
+    containers: |
+      $(dockerRepository):$(imageName)
+    # Replace the above placeholders with actual service connection name, app service name, etc.
