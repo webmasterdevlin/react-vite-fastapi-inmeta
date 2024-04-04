@@ -1,3 +1,4 @@
+# Stage 0, "build-stage", based on Node.js, to build and compile the frontend
 # Continue from the build stage
 FROM node:20-slim as build
 
@@ -12,7 +13,7 @@ RUN npm run build
 RUN npm install -g serve
 
 # Expose your chosen port
-EXPOSE 5137
+EXPOSE 8080
 
 # Serve your static files on the chosen port
-CMD ["serve", "-s", "build", "-l", "5137"]
+CMD ["serve", "-s", "build", "-l", "8080"]

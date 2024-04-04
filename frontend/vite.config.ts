@@ -6,6 +6,8 @@ import viteTsconfigPaths from 'vite-tsconfig-paths';
 import million from 'million/compiler';
 import { TanStackRouterVite } from '@tanstack/router-vite-plugin';
 
+const isDevelopment = process.env.NODE_ENV === 'development';
+
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react(), viteTsconfigPaths(), million.vite({ auto: true }), TanStackRouterVite()],
@@ -20,8 +22,15 @@ export default defineConfig({
       provider: 'istanbul',
     },
   },
+  preview: {
+    port: 8080,
+    strictPort: true,
+  },
   server: {
-    host: '0.0.0.0',
+    port: isDevelopment ? 3000 : 8080,
+    strictPort: true,
+    host: true,
+    origin: 'http://0.0.0.0:8080',
     proxy: {
       '^/api': {
         target: 'http://localhost:8000',
