@@ -1,6 +1,5 @@
-# Stage 0, "build-stage", based on Node.js, to build and compile the frontend
-# Continue from the build stage
-FROM node:20-slim as build
+# This dockerfile is not needed if deploying to azure static web app service as it will build the app automatically and serve it
+FROM node:20-slim
 
 # Your existing setup...
 WORKDIR /app
@@ -17,3 +16,5 @@ EXPOSE 8080
 
 # Serve your dist folder on the chosen port
 CMD ["serve", "-s", "dist", "-l", "8080"]
+
+# NGINX is not needed if deploying to azure app service
