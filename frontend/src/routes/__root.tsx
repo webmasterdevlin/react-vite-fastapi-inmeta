@@ -1,6 +1,6 @@
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Outlet, useRouterState, createRootRoute } from '@tanstack/react-router';
-import { TanStackRouterDevtools } from '@tanstack/router-devtools';
+import React from 'react';
 import Spinner from '../components/Spinner';
 
 /* Show a global spinner when the router is transitioning */
@@ -16,6 +16,24 @@ function RouterSpinner() {
 export const Route = createRootRoute({
   component: RootComponent,
 });
+
+const TanStackRouterDevtools =
+  process.env.NODE_ENV === 'production'
+    ? () => {
+        return null;
+      } // Render nothing in production
+    : React.lazy(() =>
+        // Lazy load in development
+        {
+          return import('@tanstack/router-devtools').then(res => {
+            return {
+              default: res.TanStackRouterDevtools,
+              // For Embedded Mode
+              // default: res.TanStackRouterDevtoolsPanel
+            };
+          });
+        },
+      );
 
 function RootComponent() {
   return (

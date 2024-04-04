@@ -1,7 +1,10 @@
 import axios from 'axios';
 
+const isDevelopment = process.env.NODE_ENV === 'development';
+const baseURL = import.meta.env.VITE_BASE_URL;
+
 export const api = axios.create({
-  baseURL: '/api/',
+  baseURL: isDevelopment ? '/api/' : baseURL,
 });
 
 export const EndPoints = {

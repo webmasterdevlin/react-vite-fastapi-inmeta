@@ -33,7 +33,7 @@ export default defineConfig({
     origin: 'http://0.0.0.0:8080',
     proxy: {
       '^/api': {
-        target: isDevelopment ? 'http://localhost:8000' : 'http://localhost:8000',
+        target: 'http://localhost:8000',
         changeOrigin: true,
       },
     },
